@@ -1,0 +1,93 @@
+{% extends 'customadmin/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_blocked %}Unblock{% else %}Block{% endif %} User - Socio-Linkr Admin{% endblock %}
+{% block page_title %}{% if is_blocked %}Unblock{% else %}Block{% endif %} User{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="confirmation-card">
+        <div class="confirmation-header">
+            <span class="material-icons">{% if is_blocked %}lock_open{% else %}block{% endif %}</span>
+            <h2>{% if is_blocked %}Unblock{% else %}Block{% endif %} User</h2>
+        </div>
+        
+        <div class="confirmation-body">
+            <div class="user-info-large">
+                <img src="{% static 'images/default-avatar.jpg' %}" alt="{{ user.username }}" class="user-avatar-large">
+                <div>
+                    <h3>{{ user.username }}</h3>
+                    <p>{{ user.email }}</p>
+                    <p>Joined: {{ user.date_joined|date:"M d, Y" }}</p>
+                    <p>Posts: {{ user.post_set.count }}</p>
+                </div>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if is_blocked %}
+                <p class="block-info">
+                    Currently blocked until: {{ block_info.blocked_until|date:"M d, Y H:i" }}<br>
+                    Reason: {{ block_info.reason }}
+                </p>
+                <input type="hidden" name="action" value="unblock">
+                <div class="confirmation-actions">
+                    <button type="submit" class="btn btn-warning">Unblock User</button>
+                    <a href="{% url 'customadmin:user_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+                
+                {% else %}
+                <div class="form-group">
+                    <label for="reason">Reason for blocking:</label>
+                    <textarea id="reason" name="reason" rows="3" placeholder="Enter reason for blocking this user..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="duration">Block duration (days):</label>
+                    <select id="duration" name="duration" class="form-select">
+                        <option value="1">1 day</option>
+                        <option value="3">3 days</option>
+                        <option value="7" selected>7 days</option>
+                        <option value="14">14 days</option>
+                        <option value="30">30 days</option>
+                        <option value="365">Permanent (1 year)</option>
+                    </select>
+                </div>
+                
+                <input type="hidden" name="action" value="block">
+                <div class="confirmation-actions">
+                    <button type="submit" class="btn btn-danger">Block User</button>
+                    <a href="{% url 'customadmin:user_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.block-info {
+    background-color: #2d2d2d;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid #ffca28;
+}
+
+.form-select {
+    width: 100%;
+    padding: 10px;
+    background-color: #1a1a1a;
+    border: 1px solid #2f2f2f;
+    border-radius: 8px;
+    color: #f1f1f1;
+    font-size: 14px;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Delete User - Socio-Linkr Admin{% endblock %}
+{% block page_title %}Confirm User Deletion{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="confirmation-card">
+        <div class="confirmation-header">
+            <span class="material-icons">warning</span>
+            <h2>Confirm Deletion</h2>
+        </div>
+        
+        <div class="confirmation-body">
+            <p>Are you sure you want to delete the user <strong>{{ user.username }}</strong>?</p>
+            <p>This action will permanently delete:</p>
+            <ul>
+                <li>User account</li>
+                <li>User profile</li>
+                <li>All posts by this user</li>
+                <li>All likes by this user</li>
+                <li>All follow relationships</li>
+            </ul>
+            <p class="warning-text">This action cannot be undone.</p>
+        </div>
+        
+        <div class="confirmation-actions">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, Delete User</button>
+                <a href="{% url 'customadmin:user_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

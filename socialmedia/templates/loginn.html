@@ -1,0 +1,345 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login • ChatX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+</head>
+<body>
+    <div class="login-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-4">
+                    <!-- Login Card -->
+                    <div class="login-card">
+
+
+                        <div class="instagram-logo">ChatX</div>
+                        <div class="instagram-logo1">Log In </div>
+                        
+                        
+                        {% if invalid %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ invalid }}
+                        </div>
+                        {% endif %}
+
+                        <form class="login-form" method="post">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <input type="text" name="fnm" required class="form-control" placeholder="Username or email" />
+                            </div>
+
+                            <div class="form-group">
+                                <div class="password-input-container">
+                                    <input type="password" name="pwd" required class="form-control" placeholder="Password" />
+                                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-login">Log In</button>
+                        </form>
+
+                        
+                    </div>
+
+                    <!-- Sign Up Section -->
+                    <div class="signup-section">
+                        <p class="signup-text">Don't have an account? <a href="/signup" class="signup-link">Sign up</a></p>
+                    </div>
+
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <style>
+        :root {
+            --ig-primary-button: #0095f6;
+            --ig-primary-button-hover: #1877f2;
+            --ig-text-primary: #262626;
+            --ig-text-secondary: #8e8e8e;
+            --ig-background-primary: #ffffff;
+            --ig-background-secondary: #fafafa;
+            --ig-border: #dbdbdb;
+            --ig-error: #ed4956;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --ig-text-primary: #f1f1f1;
+                --ig-text-secondary: #a8a8a8;
+                --ig-background-primary: #000000;
+                --ig-background-secondary: #121212;
+                --ig-border: #262626;
+            }
+        }
+
+        body {
+            background-color: var(--ig-background-primary);
+            color: var(--ig-text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--ig-background-primary);
+            border: 1px solid var(--ig-border);
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .instagram-logo {
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 24px;
+            background: linear-gradient(45deg, #fdf497, #fdf497, #fd5949, #d6249f, #285AEB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .instagram-logo1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--ig-text-primary);
+        }
+
+        .login-form {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-control {
+            background: var(--ig-background-secondary);
+            border: 1px solid var(--ig-border);
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+            color: var(--ig-text-primary);
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--ig-text-secondary);
+            background: var(--ig-background-secondary);
+        }
+
+        .form-control::placeholder {
+            color: var(--ig-text-secondary);
+        }
+
+        .btn-login {
+            background: var(--ig-primary-button);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .btn-login:hover {
+            background: var(--ig-primary-button-hover);
+        }
+
+        .btn-login:disabled {
+            background: #b2dffc;
+            cursor: not-allowed;
+        }
+
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: var(--ig-text-secondary);
+            font-size: 13px;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: var(--ig-border);
+        }
+
+        .separator span {
+            padding: 0 16px;
+        }
+
+        .facebook-login {
+            color: #385185;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .facebook-login i {
+            margin-right: 8px;
+        }
+
+        .forgot-password {
+            color: var(--ig-text-secondary);
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .signup-section {
+            background: var(--ig-background-primary);
+            border: 1px solid var(--ig-border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .signup-text {
+            color: var(--ig-text-secondary);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .signup-link {
+            color: var(--ig-primary-button);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .alert-danger {
+            background: rgba(237, 73, 86, 0.1);
+            border: 1px solid var(--ig-error);
+            color: var(--ig-error);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .app-download {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .app-download-text {
+            color: var(--ig-text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .app-stores {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .app-store-btn {
+            height: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .login-card {
+                border: none;
+                padding: 32px 20px;
+            }
+            
+            .signup-section {
+                border: none;
+            }
+            
+            .login-container {
+                padding: 0;
+            }
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--ig-text-secondary);
+            cursor: pointer;
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+    </style>
+
+
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.querySelector('input[name="pwd"]');
+            const toggleButton = document.querySelector('.password-toggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleButton.classList.remove('fa-eye');
+                toggleButton.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleButton.classList.remove('fa-eye-slash');
+                toggleButton.classList.add('fa-eye');
+            }
+        }
+
+        // Add form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const inputs = this.querySelectorAll('input[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.style.borderColor = '#ed4956';
+                } else {
+                    input.style.borderColor = '';
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

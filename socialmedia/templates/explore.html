@@ -1,0 +1,319 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/cb792c0850.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Explore </title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar">
+            
+            <ul class="nav flex-column mt-4">
+
+                <div class="instagram-logo">ChatX</div>
+                <br>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/explore">
+                        <i class="fa-solid fa-compass"></i> Explore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reels">
+                        <i class="fa-solid fa-clapperboard"></i> Reels
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal3">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i class="fa-solid fa-circle-plus"></i> Create Post
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#reelUploadModal">
+                        <i class="fa-solid fa-video"></i> Create Reel
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile/{{user}}">
+                        <i class="fa-solid fa-user"></i> Profile
+                    </a>
+                </li>
+                {% if user.is_superuser or user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin-custom/">
+                            <i class="fa-solid fa-gear"></i> Admin Panel
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/logoutt">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                </li>
+                
+                
+                <div class="text-center mt-3">
+                <img src="{{profile.profileimg.url}}" alt="Profile Picture" class="profile-pic">
+                <h4 class="mt-2"><a href="/profile/{{user}}">@{{user}}</a></h4>
+            </div>
+                
+            </ul>
+        </nav>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                {% include "modal.html" %}
+                {% include "search.html" %}
+
+                <div class="explore-container">
+                    <div class="explore-header">
+                        <h1 class="explore-title">Explore</h1>
+                    </div>
+
+                    <div class="explore-grid">
+                        {% for pos in post %}
+                        <div class="explore-post">
+                            <img src="{{pos.image.url}}" alt="Post by @{{pos.user}}">
+                            <div class="explore-post-overlay">
+                                <div class="explore-post-user">
+                                    @{{pos.user}}
+                                </div>
+                                <div class="explore-post-stats">
+                                    <div class="explore-post-stat">
+                                        <i class="fa-solid fa-heart"></i> {{pos.no_of_likes}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'js/app.js'%}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+<style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .sidebar {
+            background-color: #000000;
+            height: 100vh;
+            position: fixed;
+            width: 244px;
+            border-right: 1px solid #262626;
+            padding: 20px 0;
+        }
+        .instagram-logo {
+            padding: 0 20px;
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 24px;
+            background: linear-gradient(45deg, #fdf497, #fdf497, #fd5949, #d6249f, #285AEB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-pic {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #363636;
+        }
+
+        .sidebar a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .sidebar h4 a {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            padding: 12px 20px;
+            margin: 4px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #121212;
+        }
+
+        .nav-link.active {
+            font-weight: 600;
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 16px;
+            font-size: 18px;
+        }
+
+        main {
+            margin-left: 244px;
+            padding: 0;
+            background-color: #000000;
+        }
+
+        .explore-container {
+            padding: 20px;
+            max-width: 935px;
+            margin: 0 auto;
+        }
+
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .explore-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .explore-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .explore-post {
+            position: relative;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 30px;
+            
+        }
+
+        .explore-post img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .explore-post:hover img {
+            transform: scale(1.05);
+        }
+
+        .explore-post-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .explore-post:hover .explore-post-overlay {
+            opacity: 1;
+        }
+
+        .explore-post-user {
+            display: flex;
+            align-items: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .explore-post-stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            color: white;
+        }
+
+        .explore-post-stat {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .explore-post-stat i {
+            margin-right: 4px;
+            font-size: 16px;
+        }
+
+        .explore-header {
+            padding: 16px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #262626;
+        }
+
+        .explore-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px;
+            }
+            
+            main {
+                margin-left: 0;
+            }
+        }
+    </style>
+
+</html>

@@ -1,0 +1,275 @@
+{% extends 'customadmin/base.html' %}
+{% load static %}
+
+{% block title %}Reel Management - ChatX Admin{% endblock %}
+{% block page_title %}Reel Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="header-actions">
+        <div class="search-box">
+            <input type="text" placeholder="Search reels..." id="reelSearch">
+            <span class="material-icons">search</span>
+        </div>
+    </div>
+</div>
+
+<div class="reels-grid">
+    {% for reel in reels %}
+    <div class="reel-card">
+        <div class="reel-header">
+            <div class="reel-user-info">
+                <div class="reel-username">{{ reel.user }}</div>
+                <div class="reel-date">{{ reel.created_at|date:"M d, Y" }}</div>
+            </div>
+        </div>
+        
+        <div class="reel-video-container">
+            <video class="reel-video" muted>
+                <source src="{{ reel.video.url }}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="play-overlay">
+                <span class="material-icons">play_arrow</span>
+            </div>
+        </div>
+        
+        <div class="reel-details">
+            <div class="reel-caption">{{ reel.caption|truncatewords:15 }}</div>
+            <div class="reel-stats">
+                <span class="reel-likes">
+                    <span class="material-icons">favorite</span>
+                    {{ reel.no_of_likes }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="reel-actions">
+            <a href="{% url 'customadmin:delete_reel' reel.id %}" class="btn btn-danger btn-sm delete-btn">
+                Delete Reel
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="no-data">No reels found</div>
+    {% endfor %}
+</div>
+
+<style>
+    .reels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+    
+    .reel-card {
+        background: #1a1a1a;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+    
+    .reel-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .reel-header {
+        padding: 15px;
+        border-bottom: 1px solid #2a2a2a;
+    }
+    
+    .reel-user-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .reel-username {
+        font-weight: 600;
+        color: #fff;
+    }
+    
+    .reel-date {
+        color: #888;
+        font-size: 12px;
+    }
+    
+    .reel-video-container {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1/1; /* This ensures square format like posts */
+        background: #000;
+        overflow: hidden;
+        cursor: pointer;
+    }
+    
+    .reel-video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* This ensures the video fills the container */
+    }
+    
+    .play-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .play-overlay .material-icons {
+        font-size: 50px;
+        color: white;
+    }
+    
+    .reel-video-container:hover .play-overlay {
+        opacity: 1;
+    }
+    
+    .reel-details {
+        padding: 15px;
+    }
+    
+    .reel-caption {
+        color: #fff;
+        margin-bottom: 10px;
+        line-height: 1.4;
+        max-height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .reel-stats {
+        display: flex;
+        align-items: center;
+    }
+    
+    .reel-likes {
+        display: flex;
+        align-items: center;
+        color: #888;
+        font-size: 14px;
+    }
+    
+    .reel-likes .material-icons {
+        font-size: 16px;
+        margin-right: 5px;
+        color: #ed4956;
+    }
+    
+    .reel-actions {
+        padding: 15px;
+        border-top: 1px solid #2a2a2a;
+        text-align: right;
+    }
+    
+    .no-data {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        color: #888;
+    }
+    
+    /* Search box styling */
+    .search-box {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .search-box input {
+        background: #2a2a2a;
+        border: 1px solid #3a3a3a;
+        border-radius: 20px;
+        padding: 8px 15px 8px 40px;
+        color: #fff;
+        width: 250px;
+    }
+    
+    .search-box .material-icons {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #888;
+    }
+    
+    /* Button styling */
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .btn-danger {
+        background: #dc3545;
+        color: #fff;
+    }
+    
+    .btn-danger:hover {
+        background: #c82333;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make videos play on click
+        const videoContainers = document.querySelectorAll('.reel-video-container');
+        
+        videoContainers.forEach(container => {
+            const video = container.querySelector('video');
+            
+            container.addEventListener('click', function() {
+                if (video.paused) {
+                    video.play();
+                    container.querySelector('.play-overlay').style.opacity = 0;
+                } else {
+                    video.pause();
+                    container.querySelector('.play-overlay').style.opacity = 1;
+                }
+            });
+            
+            video.addEventListener('ended', function() {
+                container.querySelector('.play-overlay').style.opacity = 1;
+            });
+        });
+        
+        // Search functionality
+        const searchInput = document.getElementById('reelSearch');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const reelCards = document.querySelectorAll('.reel-card');
+                
+                reelCards.forEach(card => {
+                    const username = card.querySelector('.reel-username').textContent.toLowerCase();
+                    const caption = card.querySelector('.reel-caption').textContent.toLowerCase();
+                    
+                    if (username.includes(searchTerm) || caption.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Delete Post - Socio-Linkr Admin{% endblock %}
+{% block page_title %}Confirm Post Deletion{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="confirmation-card">
+        <div class="confirmation-header">
+            <span class="material-icons">warning</span>
+            <h2>Confirm Deletion</h2>
+        </div>
+        
+        <div class="confirmation-body">
+            <p>Are you sure you want to delete this post by <strong>{{ post.user }}</strong>?</p>
+            
+            <div class="post-preview">
+                <img src="{{ post.image.url }}" alt="Post preview">
+                <p class="post-caption-preview">{{ post.caption }}</p>
+            </div>
+            
+            <p class="warning-text">This action cannot be undone.</p>
+        </div>
+        
+        <div class="confirmation-actions">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, Delete Post</button>
+                <a href="{% url 'customadmin:post_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

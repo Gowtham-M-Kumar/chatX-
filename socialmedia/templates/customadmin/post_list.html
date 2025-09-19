@@ -1,0 +1,52 @@
+{% extends 'customadmin/base.html' %}
+{% load static %}
+
+{% block title %}Post Management - Socio-Linkr Admin{% endblock %}
+{% block page_title %}Post Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="header-actions">
+        <div class="search-box">
+            <input type="text" placeholder="Search posts..." id="postSearch">
+            <span class="material-icons">search</span>
+        </div>
+    </div>
+</div>
+
+<div class="posts-grid">
+    {% for post in posts %}
+    <div class="post-card">
+        <div class="post-header">
+            {% comment %} <img src="{% static 'images/default-avatar.jpg' %}" alt="{{ post.user }}" class="post-user-avatar"> {% endcomment %}
+            <div class="post-user-info">
+                <div class="post-username">{{ post.user }}</div>
+                <div class="post-date">{{ post.created_at|date:"M d, Y" }}</div>
+            </div>
+        </div>
+        
+        <div class="post-image">
+            <img src="{{ post.image.url }}" alt="Post by {{ post.user }}">
+        </div>
+        
+        <div class="post-details">
+            <div class="post-caption">{{ post.caption|truncatewords:15 }}</div>
+            <div class="post-stats">
+                <span class="post-likes">
+                    <span class="material-icons">favorite</span>
+                    {{ post.no_of_likes }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="post-actions">
+            <a href="{% url 'customadmin:delete_post' post.id %}" class="btn btn-danger btn-sm delete-btn">
+                Delete Post
+            </a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="no-data">No posts found</div>
+    {% endfor %}
+</div>
+{% endblock %}

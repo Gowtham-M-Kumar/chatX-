@@ -1,0 +1,66 @@
+{% load static %}
+
+<!-- Post Upload Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form action="upload" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <img src="{% static 'css/upload.png' %}" alt="" class="m-1">
+
+                        <label for="recipient-name" class="col-form-label">Photo</label>
+                        <input type="file" name="image_upload" class="form-control" id="recipient-name">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Caption</label>
+                        <textarea class="form-control" name="caption" placeholder="Caption..."
+                            id="message-text"></textarea>
+                    </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Create Post</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reel Upload Modal -->
+<div class="modal fade" id="reelUploadModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Reel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/upload-reel" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <img src="{% static 'css/video-upload.png' %}" alt="" class="m-1">
+                        <label for="reel-video" class="col-form-label">Video</label>
+                        <input type="file" name="reel_video" class="form-control" id="reel-video" accept="video/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="reel-caption" class="col-form-label">Caption</label>
+                        <textarea class="form-control" name="caption" placeholder="Caption..." id="reel-caption"></textarea>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Create Reel</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

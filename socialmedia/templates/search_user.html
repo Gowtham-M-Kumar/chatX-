@@ -1,0 +1,508 @@
+               
+
+ {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/cb792c0850.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Search Results - ChatX</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar">
+            
+            <ul class="nav flex-column mt-4">
+
+                <div class="instagram-logo">ChatX</div>
+                <br>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/explore">
+                        <i class="fa-solid fa-compass"></i> Explore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reels">
+                        <i class="fa-solid fa-clapperboard"></i> Reels
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal3">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i class="fa-solid fa-circle-plus"></i> Create Post
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#reelUploadModal">
+                        <i class="fa-solid fa-video"></i> Create Reel
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile/{{request.user.username}}">
+                        <i class="fa-solid fa-user"></i> Profile
+                    </a>
+                </li>
+                {% if user.is_superuser or user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin-custom/">
+                            <i class="fa-solid fa-gear"></i> Admin Panel
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/logoutt">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                </li>
+                <br>
+                <br>
+                <div class="text-center mt-3">
+                <img src="{{request.user.profile.profileimg.url}}" alt="Profile Picture" class="profile-pic">
+                <h4 class="mt-2"><a href="/profile/{{request.user.username}}">@{{request.user.username}}</a></h4>
+            </div>
+                
+            </ul>
+        </nav>
+
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+                {% include "modal.html" %}
+                {% include "search.html" %}
+
+                <div class="search-results-container">
+                    <div class="search-header">
+                        <h1 class="search-title">Search Results for "{{ query }}"</h1>
+                        <p class="search-subtitle">Found {{ users.count }} user(s)</p>
+                    </div>
+
+                    {% if users %}
+                    <div class="users-grid">
+                        {% for user_profile in users %}
+                        <div class="user-card">
+                            <div class="user-card-header">
+                                <img src="{{ user_profile.profileimg.url }}" alt="{{ user_profile.user.username }}" class="user-avatar">
+                            </div>
+                            <div class="user-card-body">
+                                <h3 class="user-username">@{{ user_profile.user.username }}</h3>
+                                {% if user_profile.bio %}
+                                <p class="user-bio">{{ user_profile.bio|truncatewords:15 }}</p>
+                                {% endif %}
+                                {% if user_profile.location %}
+                                <p class="user-location">
+                                    <i class="fa-solid fa-location-dot"></i> {{ user_profile.location }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class="user-card-footer">
+                                <a href="/profile/{{ user_profile.user.username }}" class="btn btn-primary view-profile-btn">
+                                    View Profile
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="no-results">
+                        <div class="no-results-icon">
+                            <i class="fa-solid fa-user-slash"></i>
+                        </div>
+                        <h3 class="no-results-title">No users found</h3>
+                        <p class="no-results-text">Try searching with different keywords</p>
+                    </div>
+                    {% endif %}
+
+                    {% if posts %}
+                    <div class="search-section">
+                        <h2 class="section-title">Posts</h2>
+                        <div class="posts-grid">
+                            {% for post in posts %}
+                            <div class="post-card">
+                                <img src="{{ post.image.url }}" alt="Post by {{ post.user }}">
+                                <div class="post-overlay">
+                                    <div class="post-stats">
+                                        <span class="post-likes">
+                                            <i class="fa-solid fa-heart"></i> {{ post.no_of_likes }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if reels %}
+                    <div class="search-section">
+                        <h2 class="section-title">Reels</h2>
+                        <div class="reels-grid">
+                            {% for reel in reels %}
+                            <div class="reel-card">
+                                <video muted>
+                                    <source src="{{ reel.video.url }}" type="video/mp4">
+                                </video>
+                                <div class="reel-overlay">
+                                    <div class="reel-stats">
+                                        <span class="reel-likes">
+                                            <i class="fa-solid fa-heart"></i> {{ reel.no_of_likes }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'js/app.js'%}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+        
+    <script>
+        // Auto-play videos on hover for reels
+        document.addEventListener('DOMContentLoaded', function() {
+            const videos = document.querySelectorAll('.reel-card video');
+            
+            videos.forEach(video => {
+                video.addEventListener('mouseenter', function() {
+                    this.play();
+                });
+                
+                video.addEventListener('mouseleave', function() {
+                    this.pause();
+                    this.currentTime = 0;
+                });
+            });
+        });
+    </script>
+</body>
+
+<style>
+    body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .sidebar {
+        background-color: #000000;
+        height: 100vh;
+        position: fixed;
+        width: 244px;
+        border-right: 1px solid #262626;
+        padding: 20px 0;
+    }
+
+    .instagram-logo {
+        padding: 0 20px;
+        font-size: 48px;
+        font-weight: 300;
+        margin-bottom: 24px;
+        background: linear-gradient(45deg, #fdf497, #fdf497, #fd5949, #d6249f, #285AEB);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .profile-pic {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #363636;
+    }
+
+    .sidebar a {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    .nav-link {
+        color: #ffffff;
+        padding: 12px 20px;
+        margin: 4px 0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .nav-link:hover {
+        background-color: #121212;
+    }
+
+    .nav-link.active {
+        font-weight: 600;
+        background-color: #121212;
+    }
+
+    .nav-link i {
+        width: 24px;
+        text-align: center;
+        margin-right: 16px;
+        font-size: 18px;
+    }
+
+    main {
+        margin-left: 244px;
+        padding: 20px;
+        background-color: #000000;
+        min-height: 100vh;
+    }
+
+    .search-results-container {
+        max-width: 935px;
+        margin: 0 auto;
+    }
+
+    .search-header {
+        padding: 20px 0;
+        border-bottom: 1px solid #262626;
+        margin-bottom: 30px;
+    }
+
+    .search-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 5px;
+    }
+
+    .search-subtitle {
+        color: #a8a8a8;
+        font-size: 14px;
+    }
+
+    .users-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .user-card {
+        background-color: #121212;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease;
+    }
+
+    .user-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .user-card-header {
+        padding: 20px;
+        text-align: center;
+        border-bottom: 1px solid #262626;
+    }
+
+    .user-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #363636;
+    }
+
+    .user-card-body {
+        padding: 20px;
+    }
+
+    .user-username {
+        font-size: 18px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 10px;
+    }
+
+    .user-bio {
+        color: #a8a8a8;
+        font-size: 14px;
+        line-height: 1.4;
+        margin-bottom: 10px;
+    }
+
+    .user-location {
+        color: #a8a8a8;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+    }
+
+    .user-location i {
+        margin-right: 5px;
+    }
+
+    .user-card-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #262626;
+        text-align: center;
+    }
+
+    .view-profile-btn {
+        background-color: #0095f6;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s ease;
+    }
+
+    .view-profile-btn:hover {
+        background-color: #1877f2;
+        color: white;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 60px 20px;
+        color: #a8a8a8;
+    }
+
+    .no-results-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+        color: #363636;
+    }
+
+    .no-results-title {
+        font-size: 24px;
+        font-weight: 300;
+        margin-bottom: 8px;
+        color: #ffffff;
+    }
+
+    .no-results-text {
+        font-size: 14px;
+        max-width: 400px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    .search-section {
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #262626;
+    }
+
+    .posts-grid,
+    .reels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .post-card,
+    .reel-card {
+        position: relative;
+        aspect-ratio: 1/1;
+        overflow: hidden;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .post-card img,
+    .reel-card video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .post-overlay,
+    .reel-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .post-card:hover .post-overlay,
+    .reel-card:hover .reel-overlay {
+        opacity: 1;
+    }
+
+    .post-stats,
+    .reel-stats {
+        display: flex;
+        color: white;
+        font-weight: 600;
+    }
+
+    .post-likes,
+    .reel-likes {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+    }
+
+    .post-likes i,
+    .reel-likes i {
+        margin-right: 5px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+            padding: 10px;
+        }
+        
+        main {
+            margin-left: 0;
+            padding: 10px;
+        }
+        
+        .users-grid,
+        .posts-grid,
+        .reels-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+</style>
+</html>

@@ -1,0 +1,112 @@
+{% extends 'customadmin/base.html' %}
+{% load static %}
+
+{% block title %}User Management - Socio-Linkr Admin{% endblock %}
+{% block page_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div class="header-actions">
+        <div class="search-box">
+            <input type="text" placeholder="Search users..." id="userSearch">
+            <span class="material-icons">search</span>
+        </div>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Joined</th>
+                <th>Posts</th>
+                <th>Reels</th>
+                <th>Status</th>
+                <th>Block Info</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in user_data %}
+            {% with user=data.user %}
+            <tr>
+                <td>
+                <div class="user-info">
+                    {% comment %} {% if user.profile and user.profile.profileimg %}
+                        <img src="{{ user.profile.profileimg.url }}" alt="{{ user.username }}" class="user-avatar">
+                    {% else %}
+                        <img src="{% static 'images/default-avatar.jpg' %}" alt="{{ user.username }}" class="user-avatar">
+                    {% endif %} {% endcomment %}
+                    <div>
+                        <div class="username">{{ user.username }}</div>
+                        <div class="user-email">{{ user.email }}</div>
+                    </div>
+                </div>
+            </td>
+                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                <td>{{ data.post_count }}</td>
+                <td>
+                    <span class="status-badge {% if data.is_blocked %}status-blocked{% else %}status-active{% endif %}">
+                        {% if data.is_blocked %}
+                            Blocked ({{ data.days_remaining }} days left)
+                        {% else %}
+                            Active
+                        {% endif %}
+                    </span>
+                </td>
+                <td>
+                    {% if data.is_blocked %}
+                        <small>{{ data.reason|truncatewords:5 }}</small>
+                    {% else %}
+                        <small class="text-muted">Not blocked</small>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{% url 'customadmin:toggle_block_user' user.id %}" 
+                           class="btn btn-sm {% if data.is_blocked %}btn-warning{% else %}btn-danger{% endif %}">
+                            {% if data.is_blocked %}
+                                Unblock
+                            {% else %}
+                                Block
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'customadmin:delete_user' user.id %}" class="btn btn-sm btn-secondary delete-btn">
+                            Delete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endwith %}
+            {% empty %}
+            <tr>
+                <td colspan="6" class="no-data">No users found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('userSearch');
+    const tableRows = document.querySelectorAll('.data-table tbody tr');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        tableRows.forEach(row => {
+            const username = row.querySelector('.username').textContent.toLowerCase();
+            const email = row.querySelector('.user-email').textContent.toLowerCase();
+            
+            if (username.includes(searchTerm) || email.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

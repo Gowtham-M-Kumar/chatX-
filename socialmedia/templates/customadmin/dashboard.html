@@ -1,0 +1,133 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Admin Dashboard - ChatX{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-icon">
+            <span class="material-icons">people</span>
+        </div>
+        <div class="stat-info">
+            <h3>{{ user_count }}</h3>
+            <p>Total Users</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <span class="material-icons">photo_library</span>
+        </div>
+        <div class="stat-info">
+            <h3>{{ post_count }}</h3>
+            <p>Total Posts</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <span class="material-icons">videocam</span>
+        </div>
+        <div class="stat-info">
+            <h3>{{ reel_count }}</h3>
+            <p>Total Reels</p>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">
+            <span class="material-icons">block</span>
+        </div>
+        <div class="stat-info">
+            <h3>{{ blocked_users_count }}</h3>
+            <p>Blocked Users</p>
+        </div>
+    </div>
+</div>
+
+<div class="recent-activity">
+    <h2>Recent Activity</h2>
+    
+    <div class="activity-section">
+        <h3>Latest Users</h3>
+        <div class="activity-list">
+            {% for user in recent_users %}
+            <div class="activity-item">
+                <img src="{{ user.profileimg.url }}" alt="{{ user.user.username }}" class="activity-avatar">
+                <div class="activity-details">
+                    <p><strong>{{ user.user.username }}</strong> joined</p>
+                    <span class="activity-time">{{ user.user.date_joined|timesince }} ago</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-activity">No recent users</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="activity-section">
+        <h3>Latest Posts</h3>
+        <div class="activity-list">
+            {% for post in recent_posts %}
+            <div class="activity-item">
+                <img src="{{ post.image.url }}" alt="Post by {{ post.user }}" class="activity-post-img">
+                <div class="activity-details">
+                    <p><strong>{{ post.user }}</strong> posted</p>
+                    <span class="activity-time">{{ post.created_at|timesince }} ago</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-activity">No recent posts</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="activity-section">
+        <h3>Latest Reels</h3>
+        <div class="activity-list">
+            {% for reel in recent_reels %}
+            <div class="activity-item">
+                <video class="activity-reel-video" muted>
+                    <source src="{{ reel.video.url }}" type="video/mp4">
+                </video>
+                <div class="activity-details">
+                    <p><strong>{{ reel.user }}</strong> uploaded a reel</p>
+                    <span class="activity-time">{{ reel.created_at|timesince }} ago</span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-activity">No recent reels</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .activity-reel-video {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 15px;
+    }
+</style>
+
+<script>
+    // Auto-play videos on hover
+    document.addEventListener('DOMContentLoaded', function() {
+        const videos = document.querySelectorAll('.activity-reel-video');
+        
+        videos.forEach(video => {
+            video.addEventListener('mouseenter', function() {
+                this.play();
+            });
+            
+            video.addEventListener('mouseleave', function() {
+                this.pause();
+                this.currentTime = 0;
+            });
+        });
+    });
+</script>
+{% endblock %}

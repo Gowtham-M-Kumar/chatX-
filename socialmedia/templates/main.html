@@ -1,0 +1,570 @@
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/cb792c0850.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>ChatX</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    
+</head>
+
+<body>
+   <!-- this a modal code -->
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block sidebar">
+            
+            <ul class="nav flex-column mt-4">
+
+                <div class="instagram-logo">ChatX</div>
+                <br>
+
+
+
+                <li class="nav-item">
+                    <a class="nav-link active" href="/">
+                        <i class="fa-solid fa-house"></i> Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/explore">
+                        <i class="fa-solid fa-compass"></i> Explore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reels">
+                        <i class="fa-solid fa-clapperboard"></i> Reels
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal3">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i class="fa-solid fa-circle-plus"></i> Create Post
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#reelUploadModal">
+                        <i class="fa-solid fa-video"></i> Create Reel
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/chat/">
+                        <i class="fa-solid fa-message"></i> Messages
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/profile/{{user}}">
+                        <i class="fa-solid fa-user"></i> Profile
+                    </a>
+                </li>
+                {% if user.is_superuser or user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin-custom/">
+                            <i class="fa-solid fa-gear"></i> Admin Panel
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/logoutt">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                </li>
+                
+                <div class="text-center mt-3">
+                <img src="{{profile.profileimg.url}}" alt="Profile Picture" class="profile-pic">
+                <h4 class="mt-2"><a href="/profile/{{user}}">@{{user}}</a></h4>
+            </div>
+                
+            </ul>
+        </nav>
+        
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            {% include "modal.html" %}
+            {% include "search.html" %}
+        
+            <div class="home-container">
+                {% if post %}
+                    {% for pos in post %}
+                    <div class="post-card" id="{{pos.id}}">
+                        <!-- Post Header -->
+                        <div class="post-header">
+                            <a href="/profile/{{pos.user}}" class="post-username">@{{pos.user}}</a>
+                        </div>
+                        
+                        <!-- Post Image -->
+                        <img src="{{pos.image.url}}" alt="Post by @{{pos.user}}" class="post-image">
+                        
+                       <!-- Post Actions -->
+                        <div class="post-actions">
+    <!-- Like Button -->
+    <a href="/like-post/{{pos.id}}" class="post-action-btn like-btn">
+        <i class="fa-solid fa-heart"></i>
+    </a>
+    
+    <!-- Comment Button -->
+    <button class="post-action-btn comment-btn" data-bs-toggle="modal" data-bs-target="#commentModal{{pos.id}}">
+        <i class="fa-solid fa-comment"></i>
+    </button>
+</div>
+
+
+                        
+                        <!-- Post Likes -->
+                        <div class="post-likes">
+                            <span class="post-likes-count">
+                                {% if pos.no_of_likes == 0 %}
+                                0 likes
+                                {% elif pos.no_of_likes == 1 %}
+                                Liked by {{pos.no_of_likes}} person
+                                {% else %}
+                                Liked by {{pos.no_of_likes}} people
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <!-- Post Caption -->
+                        <div class="post-caption">
+                            <p class="post-caption-text">
+                                <span class="post-caption-username">@{{pos.user}}</span>
+                                {{pos.caption}}
+                            </p>
+                        </div>
+                        
+                        <!-- View Comments Button -->
+                        <div class="view-comments">
+                            <button class="view-comments-btn" data-bs-toggle="modal" data-bs-target="#commentModal{{pos.id}}">
+                                View all comments ({{ pos.comments.count }})
+                            </button>
+                        </div>
+                        
+                        <!-- Post Timestamp -->
+                        <div class="post-timestamp">
+                            {{pos.created_at|timesince}} ago
+                        </div>
+                        
+                        <!-- Comment Form -->
+                        <div class="post-comment-form">
+                            <form method="POST" action="{% url 'add-comment' pos.id %}">
+                                {% csrf_token %}
+                                <input type="text" name="content" class="post-comment-input" placeholder="Add a comment..." required>
+                                <button type="submit" class="post-comment-btn">Post</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Comment Modal for this post -->
+                    <div class="modal fade" id="commentModal{{pos.id}}" tabindex="-1" aria-labelledby="commentModalLabel{{pos.id}}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="commentModalLabel{{pos.id}}">Comments</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    {% for comment in pos.comments.all %}
+                                    <div class="comment-item mb-3">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong>@{{ comment.user }}</strong>
+                                                <p class="mb-0">{{ comment.content }}</p>
+                                                <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                            </div>
+                                            {% if comment.user == request.user.username %}
+                                            <a href="{% url 'delete-comment' comment.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <p class="text-center text-muted">No comments yet.</p>
+                                    {% endfor %}
+                                </div>
+                                <div class="modal-footer">
+                                    <form method="POST" action="{% url 'add-comment' pos.id %}" class="w-100">
+                                        {% csrf_token %}
+                                        <div class="input-group">
+                                            <input type="text" name="content" class="form-control" placeholder="Add a comment..." required>
+                                            <button type="submit" class="btn btn-primary">Post</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-feed">
+                        <div class="empty-feed-icon">
+                            <i class="fa-solid fa-house"></i>
+                        </div>
+                        <h3 class="empty-feed-title">No Posts Yet</h3>
+                        <p class="empty-feed-text">When people you follow share posts, they'll appear here.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </main>
+    </div>
+</div>
+   
+    <script src="{% static 'js/app.js'%}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+</body>
+
+
+<style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .sidebar {
+            background-color: #000000;
+            height: 100vh;
+            position: fixed;
+            width: 244px;
+            border-right: 1px solid #262626;
+            padding: 20px 0;
+        }
+
+        .instagram-logo {
+            padding: 0 20px;
+            font-size: 48px;
+            font-weight: 300;
+            margin-bottom: 24px;
+            background: linear-gradient(45deg, #fdf497, #fdf497, #fd5949, #d6249f, #285AEB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-pic {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #363636;
+        }
+
+        .sidebar a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .sidebar h4 a {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .nav-link {
+            color: #ffffff;
+            padding: 12px 20px;
+            margin: 4px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background-color: #121212;
+        }
+
+        .nav-link.active {
+            font-weight: 600;
+        }
+
+        .nav-link i {
+            width: 24px;
+            text-align: center;
+            margin-right: 16px;
+            font-size: 18px;
+        }
+
+        main {
+            margin-left: 244px;
+            padding: 20px;
+            background-color: #000000;
+            min-height: 100vh;
+        }
+
+        .home-container {
+            max-width: 614px;
+            margin: 0 auto;
+        }
+
+        .post-card {
+            background-color: #000000;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #262626;
+        }
+
+        .post-user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 1px solid #363636;
+        }
+
+        .post-username {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .post-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .post-actions {
+            padding: 12px 16px;
+            border-bottom: 1px solid #262626;
+        }
+
+        .post-action-btn {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            margin-right: 16px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .post-action-btn:hover {
+            opacity: 0.7;
+        }
+
+        .post-action-btn.save {
+            margin-right: 0;
+            margin-left: auto;
+        }
+
+        .post-likes {
+            padding: 0 16px;
+            margin-bottom: 8px;
+        }
+
+        .post-likes-count {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .post-caption {
+            padding: 0 16px;
+            margin-bottom: 8px;
+        }
+
+        .post-caption-text {
+            color: #ffffff;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .post-caption-username {
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .view-comments {
+            padding: 0 16px;
+            margin-bottom: 8px;
+        }
+
+        .view-comments-btn {
+            background: none;
+            border: none;
+            color: #a8a8a8;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .view-comments-btn:hover {
+            color: #ffffff;
+        }
+
+        .post-timestamp {
+            padding: 0 16px 12px;
+            color: #a8a8a8;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .post-comment-form {
+            padding: 12px 16px;
+            border-top: 1px solid #262626;
+            display: flex;
+            align-items: center;
+        }
+
+        .post-comment-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            padding: 0;
+            outline: none;
+        }
+
+        .post-comment-input::placeholder {
+            color: #a8a8a8;
+        }
+
+        .post-comment-btn {
+            background: none;
+            border: none;
+            color: #0095f6;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .post-comment-btn:hover {
+            opacity: 1;
+        }
+
+        .empty-feed {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a8a8a8;
+        }
+
+        .empty-feed-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #363636;
+        }
+
+        .empty-feed-title {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .empty-feed-text {
+            font-size: 14px;
+            max-width: 400px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        /* Comment Modal Styles */
+        .modal-content {
+            background-color: #000000;
+            border: 1px solid #363636;
+            color: #ffffff;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #363636;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #363636;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .comment-item {
+            border-bottom: 1px solid #262626;
+            padding-bottom: 10px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 10px;
+            }
+            
+            main {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .home-container {
+                max-width: 100%;
+            }
+        }
+
+        .post-actions {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 16px;
+    border-bottom: 1px solid #262626;
+}
+
+.post-action-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.post-action-btn i {
+    font-size: 24px;
+}
+
+/* Like button */
+.like-btn {
+    color: #ffffff;
+}
+
+.like-btn:hover {
+    color: #ff375f;
+}
+
+/* Comment button */
+.comment-btn {
+    color: #ffffff;
+}
+
+.comment-btn:hover {
+    color: #0095f6;
+}
+
+
+    </style>
+
+</html>
