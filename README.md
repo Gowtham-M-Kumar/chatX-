@@ -2,6 +2,10 @@
 
 This is a Django-based social media application. It includes features such as user authentication, profile management, posting images, reels, and more.
 
+
+##Checkout the Website :
+https://chatx31.pythonanywhere.com/
+
 ## Features
 - User signup, login, and profile management
 - Post images and reels
